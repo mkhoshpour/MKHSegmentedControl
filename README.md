@@ -3,6 +3,7 @@ MKHSegmentedControl
 
 Android style segmented control written in swift.  
 Fully customisable.  
+Added 2 labels for each segment by Majid Khoshpour.
 
 Demo
 ----
