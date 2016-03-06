@@ -1,22 +1,25 @@
 //
-//  YSSegmentedControl.swift
-//  yemeksepeti
+//  MKHSegmentedControl.swift
+//  Majid Khoshpour
 //
-//  Created by Cem Olcay on 22/04/15.
-//  Copyright (c) 2015 yemeksepeti. All rights reserved.
+//  Created by Majid Khoshpour on 14/01/16.
+//  Copyright (c) 2016 Majid Khoshpour. All rights reserved.
 //
 
 import UIKit
 
 // MARK: - Appearance
 
-public struct YSSegmentedControlAppearance {
+public struct MKHSegmentedControlAppearance {
     public var backgroundColor: UIColor
     public var selectedBackgroundColor: UIColor
-    public var textColor: UIColor
-    public var font: UIFont
+    public var textColorUp: UIColor
+    public var textColorDown: UIColor
+    public var fontUp: UIFont
+    public var fontDown: UIFont
     public var selectedTextColor: UIColor
-    public var selectedFont: UIFont
+    public var selectedFontUp: UIFont
+    public var selectedFontDown: UIFont
     public var bottomLineColor: UIColor
     public var selectorColor: UIColor
     public var bottomLineHeight: CGFloat
@@ -28,33 +31,42 @@ public struct YSSegmentedControlAppearance {
 
 // MARK: - Control Item
 
-typealias YSSegmentedControlItemAction = (item: YSSegmentedControlItem) -> Void
+typealias MKHSegmentedControlItemAction = (item: MKHSegmentedControlItem) -> Void
 
-class YSSegmentedControlItem: UIControl {
+class MKHSegmentedControlItem: UIControl {
     
     // MARK: Properties
     
-    private var willPress: YSSegmentedControlItemAction?
-    private var didPressed: YSSegmentedControlItemAction?
-    var label: UILabel!
+    private var willPress: MKHSegmentedControlItemAction?
+    private var didPressed: MKHSegmentedControlItemAction?
+    var labelUp: UILabel!
+    var labelDown: UILabel!
+
     
     // MARK: Init
     
     init (
         frame: CGRect,
         text: String,
-        appearance: YSSegmentedControlAppearance,
-        willPress: YSSegmentedControlItemAction?,
-        didPressed: YSSegmentedControlItemAction?) {
+        number: String,
+        appearance: MKHSegmentedControlAppearance,
+        willPress: MKHSegmentedControlItemAction?,
+        didPressed: MKHSegmentedControlItemAction?) {
             super.init(frame: frame)
             self.willPress = willPress
             self.didPressed = didPressed
-            label = UILabel(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height))
-            label.textColor = appearance.textColor
-            label.font = appearance.font
-            label.textAlignment = .Center
-            label.text = text
-            addSubview(label)
+            labelUp = UILabel(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height / 2))
+            labelDown = UILabel(frame: CGRect(x: 0, y: frame.size.height / 2, width: frame.size.width, height: frame.size.height / 2))
+            labelDown.textColor = appearance.textColorDown
+            labelUp.textColor = appearance.textColorUp
+            labelDown.font = appearance.fontDown
+            labelUp.font = appearance.fontUp
+            labelDown.textAlignment = .Center
+            labelUp.textAlignment = .Center
+            labelDown.text = text
+            labelUp.text = number
+            addSubview(labelDown)
+            addSubview(labelUp)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -75,37 +87,40 @@ class YSSegmentedControlItem: UIControl {
 
 // MARK: - Control
 
-@objc public protocol YSSegmentedControlDelegate {
-    optional func segmentedControlWillPressItemAtIndex (segmentedControl: YSSegmentedControl, index: Int)
-    optional func segmentedControlDidPressedItemAtIndex (segmentedControl: YSSegmentedControl, index: Int)
+@objc public protocol MKHSegmentedControlDelegate {
+    optional func segmentedControlWillPressItemAtIndex (segmentedControl: MKHSegmentedControl, index: Int)
+    optional func segmentedControlDidPressedItemAtIndex (segmentedControl: MKHSegmentedControl, index: Int)
 }
 
-public typealias YSSegmentedControlAction = (segmentedControl: YSSegmentedControl, index: Int) -> Void
+public typealias MKHSegmentedControlAction = (segmentedControl: MKHSegmentedControl, index: Int) -> Void
 
-public class YSSegmentedControl: UIView {
+public class MKHSegmentedControl: UIView {
     
     // MARK: Properties
     
-    weak var delegate: YSSegmentedControlDelegate?
-    var action: YSSegmentedControlAction?
+    weak var delegate: MKHSegmentedControlDelegate?
+    var action: MKHSegmentedControlAction?
     
-    public var appearance: YSSegmentedControlAppearance! {
+    public var appearance: MKHSegmentedControlAppearance! {
         didSet {
             self.draw()
         }
     }
     
     var titles: [String]!
-    var items: [YSSegmentedControlItem]!
+    var numbers: [String]!
+    var items: [MKHSegmentedControlItem]!
     var selector: UIView!
     
     // MARK: Init
     
-    public init (frame: CGRect, titles: [String], action: YSSegmentedControlAction? = nil) {
+    public init (frame: CGRect, titles: [String], numbers: [String],action: MKHSegmentedControlAction? = nil) {
         super.init (frame: frame)
         self.action = action
         self.titles = titles
+        self.numbers = numbers
         defaultAppearance()
+        //self.layer.shadowOpacity = 0.0
     }
     
     required public init? (coder aDecoder: NSCoder) {
@@ -128,13 +143,14 @@ public class YSSegmentedControl: UIView {
         let width = frame.size.width / CGFloat(titles.count)
         var currentX: CGFloat = 0
         for title in titles {
-            let item = YSSegmentedControlItem(
+            let item = MKHSegmentedControlItem(
                 frame: CGRect(
                     x: currentX,
                     y: appearance.labelTopPadding,
                     width: width,
                     height: frame.size.height - appearance.labelTopPadding),
                 text: title,
+                number: numbers[self.titles.indexOf(title)!],
                 appearance: appearance,
                 willPress: { segmentedControlItem in
                     let index = self.items.indexOf(segmentedControlItem)!
@@ -151,6 +167,11 @@ public class YSSegmentedControl: UIView {
             items.append(item)
             currentX += width
         }
+//        for item:MKHSegmentedControlItem in items{
+//            for number in numbers{
+//                
+//            }
+//        }
         // bottom line
         let bottomLine = CALayer ()
         bottomLine.frame = CGRect(
@@ -173,13 +194,16 @@ public class YSSegmentedControl: UIView {
     }
     
     private func defaultAppearance () {
-        appearance = YSSegmentedControlAppearance(
+        appearance = MKHSegmentedControlAppearance(
             backgroundColor: UIColor.clearColor(),
             selectedBackgroundColor: UIColor.clearColor(),
-            textColor: UIColor.grayColor(),
-            font: UIFont.systemFontOfSize(15),
+            textColorUp: UIColor(hexString: "4F4F5B"),
+            textColorDown: UIColor(hexString: "BCBCBC"),
+            fontUp: UIFont(name: "IRANSans(FaNum)", size: 16.0)!,
+            fontDown: UIFont(name: "IRANSans(FaNum)", size: 11.0)!,
             selectedTextColor: UIColor.blackColor(),
-            selectedFont: UIFont.systemFontOfSize(15),
+            selectedFontUp: UIFont(name: "IRANSans(FaNum)", size: 16.0)!,
+            selectedFontDown: UIFont(name: "IRANSans(FaNum)", size: 11.0)!,
             bottomLineColor: UIColor.blackColor(),
             selectorColor: UIColor.blackColor(),
             bottomLineHeight: 0.5,
@@ -193,13 +217,19 @@ public class YSSegmentedControl: UIView {
         moveSelectorAtIndex(index, withAnimation: withAnimation)
         for item in items {
             if item == items[index] {
-                item.label.textColor = appearance.selectedTextColor
-                item.label.font = appearance.selectedFont
+                item.labelDown.textColor = appearance.selectedTextColor
+                item.labelDown.font = appearance.selectedFontDown
                 item.backgroundColor = appearance.selectedBackgroundColor
+                item.labelUp.textColor = appearance.selectedTextColor
+                item.labelUp.font = appearance.selectedFontUp
+
             } else {
-                item.label.textColor = appearance.textColor
-                item.label.font = appearance.font
+                item.labelDown.textColor = appearance.textColorDown
+                item.labelDown.font = appearance.fontDown
                 item.backgroundColor = appearance.backgroundColor
+                item.labelUp.textColor = appearance.textColorUp
+                item.labelUp.font = appearance.fontUp
+
             }
         }
     }
