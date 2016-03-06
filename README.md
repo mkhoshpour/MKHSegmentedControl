@@ -1,4 +1,4 @@
-YSSegmentedControl
+MKHSegmentedControl
 ==================
 
 Android style segmented control written in swift.  
@@ -14,7 +14,7 @@ Install
 
 ##### Manual
 
-Copy & paste `YSSegmentedControl.swift` in your project
+Copy & paste `MKHSegmentedControl.swift` in your project
 
 ##### Cocoapods
 
@@ -26,13 +26,13 @@ pod 'YSSegmentedControl'
 Usage
 -----
 
-Create `YSSegmentedControl` with frame and titles.  
+Create `MKHSegmentedControl` with frame and titles.  
 You can either use delegation or callback initilization
 
 ##### With callback
 
 ``` swift
-    let segmented = YSSegmentedControl(
+    let segmented = MKHSegmentedControl(
         frame: CGRect(
             x: 0,
             y: 64,
@@ -53,7 +53,7 @@ You can either use delegation or callback initilization
 ##### With delegation
 
 ``` swift
-    let segmented = YSSegmentedControl(
+    let segmented = MKHSegmentedControl(
         frame: CGRect(
             x: 0,
             y: 64,
@@ -72,26 +72,28 @@ Setup the delegate and you are ready to go !
 	segmented.delegate = self
 ```
 
-### YSSegmentedControlDelegate
+### MKHSegmentedControlDelegate
 
 ``` swift
-@objc protocol YSSegmentedControlDelegate {
+@objc protocol MKHSegmentedControlDelegate {
     optional func segmentedControlWillPressItemAtIndex (segmentedControl: YSSegmentedControl, index: Int)
     optional func segmentedControlDidPressedItemAtIndex (segmentedControl: YSSegmentedControl, index: Int)
 }
 
 ```
 
-### YSSegmentedControlAppearance
+### MKHSegmentedControlAppearance
 
 ``` swift
-	struct YSSegmentedControlAppearance {
+	struct MKHSegmentedControlAppearance {
 	    
 	    var backgroundColor: UIColor
 	    var selectedBackgroundColor: UIColor
 	    
 	    var textColor: UIColor
-	    var font: UIFont
+	    var fontUp: UIFont
+	    var fontDown: UIFont
+
 	    
 	    var selectedTextColor: UIColor
 	    var selectedFont: UIFont
@@ -107,13 +109,14 @@ Setup the delegate and you are ready to go !
 The default appearance is
 
 ``` swift
-   appearance = YSSegmentedControlAppearance(
+   appearance = MKHSegmentedControlAppearance(
        
        backgroundColor: UIColor.clearColor(),
        selectedBackgroundColor: UIColor.clearColor(),
        
        textColor: UIColor.grayColor(),
-       font: UIFont.systemFontOfSize(15),
+       fontUp: UIFont.systemFontOfSize(15),
+       fontDown: UIFont.systemFontOfSize(15),
        
        selectedTextColor: UIColor.blackColor(),
        selectedFont: UIFont.systemFontOfSize(15),
@@ -128,7 +131,7 @@ The default appearance is
 You can change appearance by
 
 ``` swift
-	segmented.appearance = YSSegmentedAppearance (...)
+	segmented.appearance = MKHSegmentedControl (...)
 
 	// or
 
